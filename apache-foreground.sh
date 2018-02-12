@@ -1,0 +1,61 @@
+#!/bin/bash
+
+##
+# Detect the ownership of the webroot
+# and run apache as that user.
+#
+main() {
+    #local owner group owner_id group_id tmp
+    #read owner group owner_id group_id < <(stat -c '%U %G %u %g' .)
+    #if [[ $owner = UNKNOWN ]]; then
+    #    owner=$(randname)
+    #    if [[ $group = UNKNOWN ]]; then
+    #        group=$owner
+    #        addgroup --system --gid "$group_id" "$group"
+    #    fi
+    #    adduser --system --uid=$owner_id --gid=$group_id "$owner"
+    #fi
+
+    owner=www-data;
+    group=www-data;
+
+
+    tmp=/tmp/$RANDOM
+    {
+        echo "User $owner"
+        echo "Group $group"
+        grep -v '^User' /etc/apache2/apache2.conf |
+            grep -v '^Group'
+    } >> "$tmp" &&
+    cat "$tmp" > /etc/apache2/apache2.conf &&
+    rm "$tmp"
+    # Not volumes, so need to be chowned
+    chown -R "$owner:$group" /var/{lock,log,run}/apache*
+    #exec /usr/sbin/apache2ctl "$@"
+}
+
+##
+# Generate a random sixteen-character
+# string of alphabetical characters
+randname() {
+    local -x LC_ALL=C
+    tr -dc '[:lower:]' < /dev/urandom |
+        dd count=1 bs=16 2>/dev/null
+}
+
+main "$@"
+
+************
+
+#echo "Starting MySQL..."
+#/etc/init.d/mysql start
+
+echo "Running dev/build..."
+cd /var/www
+sudo -u www-data ./framework/sake dev/build
+
+echo "Starting apache..."
+apache2ctl start
+
+echo "Showing access.log..."
+tail -f /var/log/apache2/access.log
