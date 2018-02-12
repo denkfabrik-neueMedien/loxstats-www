@@ -4,7 +4,7 @@ MAINTAINER Marco Kernler <marco.kernler@denkfabrik-neueMedien.de>
 ### SET UP
 
 RUN apt-get -qq update
-RUN apt-get -qqy install sudo wget lynx telnet nano curl make git-core locales
+RUN apt-get -qqy install sudo wget nano curl make locales
 RUN echo "LANG=de_DE.UTF-8\n" > /etc/default/locale && \
 	echo "de_DE.UTF-8 UTF-8\n" > /etc/locale.gen && \
 	locale-gen
