@@ -7,3 +7,8 @@ A docker image for running [LoxStats](http://www.loxstats.de) within a docker co
 * PHP 5.6
 
 ... and does NOT include any database!
+
+## Usage
+
+  docker run -dP -p 3000:80 -v <your-local-folder>:/var/www/html dnkfbrknme/loxstats-www
+
